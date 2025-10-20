@@ -3,30 +3,58 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Retrabajos - MVP</title>
+<title>Registro de Retrabajos (MVP) - KIA</title>
+
+<link rel="icon" type="image/png" href="logo.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#f7f8fb;--card:#ffffff;--accent:#d32f2f;--muted:#6b7280}
-  body{font-family:Inter,system-ui,Segoe UI,Arial; background:var(--bg); margin:0; padding:32px; color:#111}
-  .container{max-width:820px;margin:0 auto}
-  header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-  header img{height:48px}
+  :root{
+    --bg:#f7f8fb;
+    --card:#ffffff;
+    --accent:#e4002b;
+    --muted:#6b7280;
+    --text:#0f1724;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{font-family:Inter,system-ui,Segoe UI,Arial;background:var(--bg);margin:0;padding:28px;color:var(--text)}
+  .container{max-width:980px;margin:0 auto}
+  header{display:flex;align-items:center;gap:18px;margin-bottom:18px}
+  header img{height:64px}
   h1{font-size:20px;margin:0}
-  .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
-  .row{display:flex;gap:12px}
+  .subtitle{color:var(--muted);font-size:13px}
+  .card{background:var(--card);padding:20px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(15,23,42,0.06);overflow:hidden}
+  .card .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .card h2{margin:0;font-size:16px}
   label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
-  input[type="text"], input[type="date"], textarea, select { width:100%; padding:10px 12px; border:1px solid #e6e9ef; border-radius:8px; font-size:14px; }
-  textarea{min-height:90px;resize:vertical}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  input[type="text"], input[type="date"], input[type="number"], textarea, select {
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #e6e9ef;
+    border-radius:10px;
+    font-size:14px;
+    background:#fff;
+    color:var(--text);
+  }
+  textarea{min-height:100px;resize:vertical}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
-  button{padding:10px 14px;border-radius:8px;border:0;font-weight:600;cursor:pointer}
+  button{padding:10px 14px;border-radius:10px;border:0;font-weight:600;cursor:pointer}
   .btn-primary{background:var(--accent);color:#fff}
   .btn-ghost{background:transparent;border:1px solid #e6e9ef}
   .note{font-size:13px;color:var(--muted);margin-top:8px}
-  footer{margin-top:16px;font-size:13px;color:var(--muted)}
-  .success{padding:10px;border-radius:8px;background:#e6ffef;color:#064e3b;margin-top:10px}
-  .error{padding:10px;border-radius:8px;background:#fff1f0;color:#7f1d1d;margin-top:10px}
+  footer{margin-top:18px;font-size:13px;color:var(--muted)}
+  .required{color:#b91c1c;margin-left:6px;font-weight:600}
+  .row{margin-top:12px}
+  .two-col{display:flex;gap:12px}
+  @media (max-width:720px){
+    .grid-2,.grid-3{grid-template-columns:1fr; }
+    header{flex-direction:row;align-items:center}
+    header img{height:56px}
+  }
 </style>
 </head>
 <body>
@@ -35,39 +63,75 @@
     <img src="logo.png" alt="KIA Ownership" style="height:50px;">
     <div>
       <h1>Registro de Retrabajos (MVP)</h1>
-      <div style="color:var(--muted);font-size:13px">Formulario simple para captura nacional</div>
+      <div class="subtitle">Formulario simple para captura nacional · Ownership / Postventa</div>
     </div>
   </header>
 
-  <div class="card" id="formCard">
-    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-      <strong>Nuevo retrabajo</strong>
-      <div style="margin-left:auto;font-size:13px;color:var(--muted)">Guarda y se sube al backend</div>
+  <div class="card">
+    <div class="top">
+      <div>
+        <h2>Nuevo retrabajo</h2>
+        <div class="note">Guarda y se sube al backend</div>
+      </div>
     </div>
 
-    <form id="frm">
-      <div class="grid">
+    <form id="frm" autocomplete="off">
+      <!-- Fecha -->
+      <div class="grid-2">
         <div>
-          <label>Fecha</label>
+          <label>Fecha <span class="required">*</span></label>
           <input type="date" id="fecha" required />
         </div>
         <div>
-          <label>Hora</label>
-          <input type="text" id="hora" placeholder="HH:MM" />
+          <!-- Hora eliminado segun solicitud -->
+          <label style="visibility:hidden">Hora</label>
+          <input type="text" style="visibility:hidden;height:0;padding:0;border:0"/>
         </div>
       </div>
 
-      <div style="margin-top:12px">
-        <label>Concesionario</label>
+      <!-- Concesionario + Agencia -->
+      <div class="row">
+        <label>Concesionario <span class="required">*</span></label>
         <input type="text" id="concesionario" placeholder="Nombre del concesionario" required />
       </div>
 
-      <div style="margin-top:12px">
-        <label>Nº Orden / Nº Factura</label>
-        <input type="text" id="orden" placeholder="Ej: 12345 / F-00099" required />
+      <div class="row">
+        <label>Agencia</label>
+        <input type="text" id="agencia" placeholder="Agencia / sucursal" />
       </div>
 
-      <div style="margin-top:12px">
+      <!-- Auditor -->
+      <div class="row">
+        <label>Auditor</label>
+        <input type="text" id="auditor" placeholder="Nombre del auditor" />
+      </div>
+
+      <!-- OT actual / Kilometraje actual -->
+      <div class="grid-2">
+        <div>
+          <label>OT Actual <span class="required">*</span></label>
+          <input type="text" id="otActual" placeholder="Número de OT actual" required />
+        </div>
+        <div>
+          <label>Kilometraje Actual</label>
+          <input type="number" id="kmActual" placeholder="Ej: 12345" min="0" />
+        </div>
+      </div>
+
+      <!-- OT anterior / Kilometraje anterior -->
+      <div class="grid-2">
+        <div>
+          <label>OT Anterior</label>
+          <input type="text" id="otAnterior" placeholder="Número OT anterior" />
+        </div>
+        <div>
+          <label>Kilometraje Anterior</label>
+          <input type="number" id="kmAnterior" placeholder="Ej: 12000" min="0" />
+        </div>
+      </div>
+
+      <!-- Tipo de Servicio (mantenemos) -->
+      <div class="row">
         <label>Tipo de Servicio</label>
         <select id="tipo">
           <option value="Mecánica">Mecánica</option>
@@ -77,40 +141,120 @@
         </select>
       </div>
 
-      <div style="margin-top:12px">
-        <label>Descripción</label>
-        <textarea id="desc" placeholder="Describe el motivo del retrabajo" required></textarea>
+      <!-- Falla -->
+      <div class="row">
+        <label>Falla <span class="required">*</span></label>
+        <select id="falla" required>
+          <option value="">Selecciona la falla</option>
+          <option value="Sistema de frenos">Sistema de frenos</option>
+          <option value="Sistema electrico y electronico">Sistema eléctrico y electrónico</option>
+          <option value="Motor">Motor</option>
+          <option value="Suspension">Suspensión</option>
+          <option value="Accesorios">Accesorios</option>
+          <option value="Limpieza">Limpieza</option>
+          <option value="Transmision">Transmisión</option>
+          <option value="Carroceria">Carrocería</option>
+          <option value="Otros">Otros</option>
+        </select>
       </div>
 
-      <div style="margin-top:12px">
+      <!-- Qué sucedió / Consecuencia / Causa -->
+      <div class="row">
+        <label>¿Qué sucedió? <span class="required">*</span></label>
+        <textarea id="queSucedio" placeholder="Describa qué sucedió" required></textarea>
+      </div>
+
+      <div class="row">
+        <label>Consecuencia <span class="required">*</span></label>
+        <textarea id="consecuencia" placeholder="Consecuencia del evento" required></textarea>
+      </div>
+
+      <div class="row">
+        <label>Causa <span class="required">*</span></label>
+        <textarea id="causa" placeholder="Causa principal" required></textarea>
+      </div>
+
+      <!-- Es falla de producto? -->
+      <div class="row">
+        <label>¿Es falla de Producto? <span class="required">*</span></label>
+        <div style="display:flex;gap:12px;margin-top:6px">
+          <label><input type="radio" name="fallaProducto" value="Si" required /> Sí</label>
+          <label><input type="radio" name="fallaProducto" value="No" required /> No</label>
+        </div>
+      </div>
+
+      <!-- Solucion -->
+      <div class="row">
+        <label>Solución <span class="required">*</span></label>
+        <textarea id="solucion" placeholder="Describa la solución aplicada" required></textarea>
+      </div>
+
+      <!-- Categoria de causa -->
+      <div class="row">
+        <label>Categoría de causa <span class="required">*</span></label>
+        <select id="categoriaCausa" required>
+          <option value="">Selecciona categoría</option>
+          <option value="No cumple con las actividades establecidas en el vehiculo">No cumple con las actividades establecidas en el vehículo</option>
+          <option value="Falla en diagnostico">Falla en diagnóstico</option>
+          <option value="Producto">Producto</option>
+          <option value="Falta de informacion en orden de trabajo">Falta de información en orden de trabajo</option>
+          <option value="Limpieza vehiculo">Limpieza vehículo</option>
+          <option value="No es un retorno">No es un retorno</option>
+          <option value="Falta de inspeccion final del vehiculo">Falta de inspección final del vehículo</option>
+          <option value="Falta de seguimiento asesor">Falta de seguimiento asesor</option>
+        </select>
+      </div>
+
+      <!-- Responsable -->
+      <div class="row">
+        <label>Responsable <span class="required">*</span></label>
+        <select id="responsable" required>
+          <option value="">Selecciona responsable</option>
+          <option value="Tecnico">Técnico</option>
+          <option value="Asesor">Asesor</option>
+          <option value="Control calidad">Control calidad</option>
+          <option value="Lavador">Lavador</option>
+          <option value="Tercero">Tercero</option>
+          <option value="Repuestos">Repuestos</option>
+          <option value="Producto">Producto</option>
+        </select>
+      </div>
+
+      <!-- Descripción (se mantiene) -->
+      <div class="row">
+        <label>Descripción</label>
+        <textarea id="desc" placeholder="Descripción adicional"></textarea>
+      </div>
+
+      <!-- Fotos -->
+      <div class="row">
         <label>Fotos (opcional)</label>
         <input type="file" id="photos" accept="image/*" multiple />
-        <div class="note">Las imágenes no se suben en el prototipo MVP; si quieres imágenes, la Function puede recibirlas como base64 (configurable).</div>
       </div>
 
       <div class="actions">
         <button type="button" class="btn-ghost" id="btnClear">Limpiar</button>
         <button type="submit" class="btn-primary" id="btnSave">Guardar</button>
       </div>
-    </form>
 
-    <div id="msgArea"></div>
+      <div id="msgArea" style="margin-top:10px"></div>
+    </form>
   </div>
 
   <footer>Prototype · Ownership / Postventa · KIA</footer>
 </div>
 
 <script>
-  // CONFIG: Pon aquí el endpoint de la Azure Function (HTTP trigger)
+  // CONFIG: Pon aquí el endpoint de la Azure Function (HTTP trigger) si ya lo tienes
   const API_URL = "<PON_AQUI_EL_ENDPOINT_DE_LA_FUNCTION>"; 
-  // Ejemplo: https://mi-funcion.azurewebsites.net/api/retrabajos?code=...
+  // Ejemplo: https://mi-funcion.azurewebsites.net/api/RetrabajosHttp?code=...
 
   const frm = document.getElementById('frm');
   const msgArea = document.getElementById('msgArea');
   const btnClear = document.getElementById('btnClear');
 
   function showMsg(text, type = "success") {
-    msgArea.innerHTML = `<div class="${type === 'success' ? 'success' : 'error'}">${text}</div>`;
+    msgArea.innerHTML = `<div style="padding:10px;border-radius:8px;background:${type==='success'? '#e6ffef' : '#fff1f0'};color:${type==='success'? '#064e3b' : '#7f1d1d'}">${text}</div>`;
     setTimeout(()=> msgArea.innerHTML = '', 6000);
   }
 
@@ -120,29 +264,69 @@
 
   frm.onsubmit = async (e) => {
     e.preventDefault();
+
+    // Validaciones extra (asegurar radio seleccionado)
+    const fallaProductoChecked = document.querySelector('input[name="fallaProducto"]:checked');
+    if(!fallaProductoChecked) { showMsg('Selecciona si es falla de producto (Sí / No).','error'); return; }
+
     const data = {
       fecha: document.getElementById('fecha').value,
-      hora: document.getElementById('hora').value,
       concesionario: document.getElementById('concesionario').value.trim(),
-      orden: document.getElementById('orden').value.trim(),
+      agencia: document.getElementById('agencia').value.trim(),
+      auditor: document.getElementById('auditor').value.trim(),
+      otActual: document.getElementById('otActual').value.trim(),
+      kmActual: document.getElementById('kmActual').value,
+      otAnterior: document.getElementById('otAnterior').value.trim(),
+      kmAnterior: document.getElementById('kmAnterior').value,
       tipo: document.getElementById('tipo').value,
+      falla: document.getElementById('falla').value,
+      queSucedio: document.getElementById('queSucedio').value.trim(),
+      consecuencia: document.getElementById('consecuencia').value.trim(),
+      causa: document.getElementById('causa').value.trim(),
+      fallaProducto: fallaProductoChecked.value,
+      solucion: document.getElementById('solucion').value.trim(),
+      categoriaCausa: document.getElementById('categoriaCausa').value,
+      responsable: document.getElementById('responsable').value,
       descripcion: document.getElementById('desc').value.trim(),
       creadoEn: new Date().toISOString()
     };
 
-    if (!data.fecha || !data.concesionario || !data.orden || !data.descripcion) {
-      showMsg('Completa los campos obligatorios', 'error'); return;
+    // Required field checks (those marked with *)
+    const requiredFields = [
+      {k:'fecha', v:data.fecha},
+      {k:'concesionario', v:data.concesionario},
+      {k:'otActual', v:data.otActual},
+      {k:'falla', v:data.falla},
+      {k:'queSucedio', v:data.queSucedio},
+      {k:'consecuencia', v:data.consecuencia},
+      {k:'causa', v:data.causa},
+      {k:'solucion', v:data.solucion},
+      {k:'categoriaCausa', v:data.categoriaCausa},
+      {k:'responsable', v:data.responsable}
+    ];
+    for(const f of requiredFields){
+      if(!f.v || String(f.v).trim()===""){
+        showMsg('Completa los campos obligatorios marcados con *', 'error');
+        return;
+      }
     }
 
-    // Enviar al backend
+    // Handle photos - for MVP we won't upload files, but we can include filenames
+    const photos = document.getElementById('photos').files;
+    if(photos && photos.length>0){
+      data.photos = Array.from(photos).map(f=>f.name);
+    }
+
+    // If no API_URL configured, save locally for demo
     if (!API_URL || API_URL.includes("<PON_AQUI")) {
-      // si no existe backend: guardar local y mostrar
-      localStorage.setItem('demo-retrabajo-'+Date.now(), JSON.stringify(data));
+      const key = 'demo-retrabajo-'+Date.now();
+      localStorage.setItem(key, JSON.stringify(data, null, 2));
       showMsg('Guardado localmente (demo). Cuando asignes API, el formulario hará POST.');
       frm.reset();
       return;
     }
 
+    // Send to backend
     try {
       document.getElementById('btnSave').disabled = true;
       const res = await fetch(API_URL, {
@@ -150,13 +334,13 @@
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify(data)
       });
-      if (!res.ok) throw new Error('HTTP '+res.status);
+      if(!res.ok) throw new Error('HTTP '+res.status);
       const json = await res.json();
-      showMsg('Enviado con éxito. ID: ' + (json.name || json.blobName || json.id) );
+      showMsg('Enviado con éxito. ID: ' + (json.id || json.blobName || json.name));
       frm.reset();
     } catch(err) {
       console.error(err);
-      showMsg('Error enviando al servidor: ' + err.message, 'error');
+      showMsg('Error al enviar: ' + err.message, 'error');
     } finally {
       document.getElementById('btnSave').disabled = false;
     }
