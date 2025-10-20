@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Retrabajos - MVP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#f7f8fb;--card:#ffffff;--accent:#d32f2f;--muted:#6b7280}
+  body{font-family:Inter,system-ui,Segoe UI,Arial; background:var(--bg); margin:0; padding:32px; color:#111}
+  .container{max-width:820px;margin:0 auto}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  header img{height:48px}
+  h1{font-size:20px;margin:0}
+  .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+  .row{display:flex;gap:12px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type="text"], input[type="date"], textarea, select { width:100%; padding:10px 12px; border:1px solid #e6e9ef; border-radius:8px; font-size:14px; }
+  textarea{min-height:90px;resize:vertical}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+  button{padding:10px 14px;border-radius:8px;border:0;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-ghost{background:transparent;border:1px solid #e6e9ef}
+  .note{font-size:13px;color:var(--muted);margin-top:8px}
+  footer{margin-top:16px;font-size:13px;color:var(--muted)}
+  .success{padding:10px;border-radius:8px;background:#e6ffef;color:#064e3b;margin-top:10px}
+  .error{padding:10px;border-radius:8px;background:#fff1f0;color:#7f1d1d;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Kia_logo.svg" alt="KIA logo">
+    <div>
+      <h1>Registro de Retrabajos (MVP)</h1>
+      <div style="color:var(--muted);font-size:13px">Formulario simple para captura nacional</div>
+    </div>
+  </header>
+
+  <div class="card" id="formCard">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+      <strong>Nuevo retrabajo</strong>
+      <div style="margin-left:auto;font-size:13px;color:var(--muted)">Guarda y se sube al backend</div>
+    </div>
+
+    <form id="frm">
+      <div class="grid">
+        <div>
+          <label>Fecha</label>
+          <input type="date" id="fecha" required />
+        </div>
+        <div>
+          <label>Hora</label>
+          <input type="text" id="hora" placeholder="HH:MM" />
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Concesionario</label>
+        <input type="text" id="concesionario" placeholder="Nombre del concesionario" required />
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Nº Orden / Nº Factura</label>
+        <input type="text" id="orden" placeholder="Ej: 12345 / F-00099" required />
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Tipo de Servicio</label>
+        <select id="tipo">
+          <option value="Mecánica">Mecánica</option>
+          <option value="Colisión">Colisión</option>
+          <option value="Mostrador">Mostrador</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Descripción</label>
+        <textarea id="desc" placeholder="Describe el motivo del retrabajo" required></textarea>
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Fotos (opcional)</label>
+        <input type="file" id="photos" accept="image/*" multiple />
+        <div class="note">Las imágenes no se suben en el prototipo MVP; si quieres imágenes, la Function puede recibirlas como base64 (configurable).</div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-ghost" id="btnClear">Limpiar</button>
+        <button type="submit" class="btn-primary" id="btnSave">Guardar</button>
+      </div>
+    </form>
+
+    <div id="msgArea"></div>
+  </div>
+
+  <footer>Prototype · Ownership / Postventa · KIA</footer>
+</div>
+
+<script>
+  // CONFIG: Pon aquí el endpoint de la Azure Function (HTTP trigger)
+  const API_URL = "<PON_AQUI_EL_ENDPOINT_DE_LA_FUNCTION>"; 
+  // Ejemplo: https://mi-funcion.azurewebsites.net/api/retrabajos?code=...
+
+  const frm = document.getElementById('frm');
+  const msgArea = document.getElementById('msgArea');
+  const btnClear = document.getElementById('btnClear');
+
+  function showMsg(text, type = "success") {
+    msgArea.innerHTML = `<div class="${type === 'success' ? 'success' : 'error'}">${text}</div>`;
+    setTimeout(()=> msgArea.innerHTML = '', 6000);
+  }
+
+  btnClear.onclick = () => {
+    frm.reset();
+  };
+
+  frm.onsubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      fecha: document.getElementById('fecha').value,
+      hora: document.getElementById('hora').value,
+      concesionario: document.getElementById('concesionario').value.trim(),
+      orden: document.getElementById('orden').value.trim(),
+      tipo: document.getElementById('tipo').value,
+      descripcion: document.getElementById('desc').value.trim(),
+      creadoEn: new Date().toISOString()
+    };
+
+    if (!data.fecha || !data.concesionario || !data.orden || !data.descripcion) {
+      showMsg('Completa los campos obligatorios', 'error'); return;
+    }
+
+    // Enviar al backend
+    if (!API_URL || API_URL.includes("<PON_AQUI")) {
+      // si no existe backend: guardar local y mostrar
+      localStorage.setItem('demo-retrabajo-'+Date.now(), JSON.stringify(data));
+      showMsg('Guardado localmente (demo). Cuando asignes API, el formulario hará POST.');
+      frm.reset();
+      return;
+    }
+
+    try {
+      document.getElementById('btnSave').disabled = true;
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      const json = await res.json();
+      showMsg('Enviado con éxito. ID: ' + (json.name || json.blobName || json.id) );
+      frm.reset();
+    } catch(err) {
+      console.error(err);
+      showMsg('Error enviando al servidor: ' + err.message, 'error');
+    } finally {
+      document.getElementById('btnSave').disabled = false;
+    }
+  };
+</script>
+</body>
+</html>
